@@ -3,4 +3,5 @@
 .envrc
 .local
 .venv
+/proto/**/*_pb2*.py*
 __pycache__

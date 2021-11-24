@@ -26,5 +26,9 @@ in
 stable.mkShell {
   buildInputs = [
     python
+    stable.protobuf
   ];
+
+  PROTOC = "${pkgs.protobuf}/bin/protoc";
+  PROTOC_INCLUDE = "${pkgs.protobuf}/include";
 }

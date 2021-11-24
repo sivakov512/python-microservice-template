@@ -2,10 +2,19 @@
 name = "{{ cookiecutter.project_slug }}"
 version = "0.1.0"
 description = "{{ cookiecutter.project_description }}"
-authors = ["{{ cookiecutter.full_name }} <{{ cookiecutter.author_email }}>"]
+authors = ["{{ cookiecutter.author_full_name }} <{{ cookiecutter.author_email }}>"]
+
+[tool.poetry.scripts]
+{{ cookiecutter.project_slug }} = 'cli:cli'
 
 [tool.poetry.dependencies]
+grpcio = "^1.41.1"
+protobuf = "^3.19.1"
 python = "^3.9"
+click = "^8.0.3"
+grpcio-tools = "^1.41.1"
+asyncpg = "^0.24.0"
+asyncpg-engine = "^0.2.0"
 
 [tool.poetry.dev-dependencies]
 black = "^21.10b0"
@@ -17,11 +26,14 @@ flake8-isort = "^4.1.1"
 flake8-print = "^4.0.0"
 flake8-pytest-style = "^1.5.1"
 flake8-quotes = "^3.3.1"
+grpc-stubs = "^1.24.7"
 isort = "^5.10.0"
 mypy = "^0.910"
+mypy-protobuf = "^3.0.0"
 pytest = "^6.2.5"
 pytest-asyncio = "^0.16.0"
 pytest-deadfixtures = "^2.2.1"
+types-protobuf = "^3.18.0"
 pdbpp = "^0.10.3"
 
 [build-system]
@@ -51,6 +63,10 @@ strict_equality = true
 warn_redundant_casts = true
 warn_return_any = true
 warn_unused_ignores = true
+
+[[tool.mypy.overrides]]
+module = ["proto.*"]
+ignore_errors = true
 
 [tool.black]
 line-length = 100
