@@ -1,0 +1,6 @@
+*.py[cod]
+.cache
+.envrc
+.local
+.venv
+__pycache__

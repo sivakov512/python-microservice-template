@@ -1,3 +1,7 @@
 {
-    "project_slug": "my_cool_project"
+    "project_name": "My cool project",
+    "project_slug": "{{ cookiecutter.project_name|lower|replace(' ', '-') }}",
+    "project_description": "This project is so cool that you will absolutely go crazy!",
+    "author_full_name": "Cool guy",
+    "author_email": "cool-guy@example.com"
 }

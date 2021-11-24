@@ -1,0 +1,56 @@
+[tool.poetry]
+name = "{{ cookiecutter.project_slug }}"
+version = "0.1.0"
+description = "{{ cookiecutter.project_description }}"
+authors = ["{{ cookiecutter.full_name }} <{{ cookiecutter.author_email }}>"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+
+[tool.poetry.dev-dependencies]
+black = "^21.10b0"
+flake8 = "^4.0.1"
+flake8-black = "^0.2.3"
+flake8-debugger = "^4.0.0"
+flake8-eradicate = "^1.2.0"
+flake8-isort = "^4.1.1"
+flake8-print = "^4.0.0"
+flake8-pytest-style = "^1.5.1"
+flake8-quotes = "^3.3.1"
+isort = "^5.10.0"
+mypy = "^0.910"
+pytest = "^6.2.5"
+pytest-asyncio = "^0.16.0"
+pytest-deadfixtures = "^2.2.1"
+pdbpp = "^0.10.3"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.isort]
+combine_as_imports = true
+include_trailing_comma = true
+line_length = 99
+multi_line_output = 3
+use_parentheses = true
+
+[tool.mypy]
+check_untyped_defs = true
+disallow_any_generics = true
+disallow_subclassing_any = true
+disallow_untyped_calls = true
+disallow_untyped_decorators = true
+disallow_untyped_defs = true
+explicit_package_bases = true
+ignore_missing_imports = true
+implicit_reexport = false
+namespace_packages = true
+no_implicit_optional = true
+strict_equality = true
+warn_redundant_casts = true
+warn_return_any = true
+warn_unused_ignores = true
+
+[tool.black]
+line-length = 100
