@@ -5,5 +5,6 @@
     "project_description": "This project is so cool that you will absolutely go crazy!",
     "author_full_name": "Cool guy",
     "author_email": "cool-guy@example.com",
-    "proto_repository": "git@github.com:your-org/proto.git"
+    "proto_repository": "git@github.com:your-org/proto.git",
+    "grpc_servicer": "proto.services.cool_service.CoolService"
 }
