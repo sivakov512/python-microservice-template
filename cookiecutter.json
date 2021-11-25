@@ -3,8 +3,21 @@
     "project_slug": "{{ cookiecutter.project_name|lower|replace(' ', '-') }}",
     "package_name": "{{ cookiecutter.project_slug|replace('-', '_') }}",
     "project_description": "This project is so cool that you will absolutely go crazy!",
+
     "author_full_name": "Cool guy",
     "author_email": "cool-guy@example.com",
-    "proto_repository": "git@github.com:your-org/proto.git",
-    "grpc_servicer": "proto.services.cool_service.CoolService"
+
+    "github_org": "cool-org",
+    "github_repo": "{{ cookiecutter.project_slug }}",
+    "git_repo_http": "https://github.com/{{ cookiecutter.github_org }}/{{ cookiecutter.github_repo }}",
+    "git_repo_ssh": "git@github.com:{{ cookiecutter.github_org }}/{{ cookiecutter.github_repo }}.git",
+
+    "docker_tag": "ghcr.io/{{ cookiecutter.github_org }}/{{ cookiecutter.github_repo }}",
+
+    "proto_repository": "git@github.com:{{ cookiecutter.github_org }}/proto.git",
+    "grpc_servicer": "proto.services.{{ cookiecutter.project_slug }}.{{ cookiecutter.project_name.title()|replace(' ', '') }}",
+
+    "_copy_without_render": [
+        "helm/templates"
+    ]
 }

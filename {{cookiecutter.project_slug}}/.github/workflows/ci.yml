@@ -1,0 +1,211 @@
+name: ci
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+env:
+  POETRY_VIRTUALENVS_IN_PROJECT: "true"
+  POETRY_VERSION: 1.1.11
+
+  SERVICE_NAME: {{ cookiecutter.project_slug }}
+
+  GO_MIGRATE_VERSION: v4.15.1
+  POSTGRES_URL: postgres://guest:guest@localhost:5432/guest?sslmode=disable
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+{% if cookiecutter.proto_repository | trim != "" -%}
+{% raw %}
+        with:
+          token: ${{ secrets.ROBOT_TOKEN }}
+          submodules: true
+{% endraw %}
+{%- endif %}
+
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+
+      - name: Install Poetry
+        run: |
+          curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py | python -
+          echo "$HOME/.poetry/bin" >> $GITHUB_PATH
+
+{% raw %}
+      - uses: actions/cache@v2
+        with:
+          path: .venv
+          key: ${{ github.ref }}-${{ github.workflow }}-${{ hashFiles('poetry.lock') }}
+          restore-keys: refs/heads/master-${{ github.workflow }}-${{ hashFiles('poetry.lock') }}
+{% endraw %}
+
+      - name: Install dependencies
+        run: poetry install
+
+      - name: Compile protobufs
+        run: make recompile-proto
+
+      - name: Lint
+        run: make lint
+
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:13
+        env:
+          POSTGRES_PASSWORD: guest
+          POSTGRES_USER: guest
+          POSTGRES_DB: guest
+        ports:
+          - 5432:5432
+
+    steps:
+      - uses: actions/checkout@v2
+{% if cookiecutter.proto_repository | trim != "" -%}
+{% raw %}
+        with:
+          token: ${{ secrets.ROBOT_TOKEN }}
+          submodules: true
+{% endraw %}
+{%- endif %}
+
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+
+      - name: Install Poetry
+        run: |
+          curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
+          echo "$HOME/.poetry/bin" >> $GITHUB_PATH
+
+{% raw %}
+      - uses: actions/cache@v2
+        with:
+          path: .venv
+          key: ${{ github.ref }}-${{ github.workflow }}-${{ hashFiles('poetry.lock') }}
+          restore-keys: refs/heads/master-${{ github.workflow }}-${{ hashFiles('poetry.lock') }}
+{% endraw %}
+
+      - name: migrate db
+        run: |
+          curl -L https://github.com/golang-migrate/migrate/releases/download/$GO_MIGRATE_VERSION/migrate.linux-amd64.tar.gz | tar xvz
+          ./migrate -path migrations -database $POSTGRES_URL up
+
+      - name: Install dependencies
+        run: poetry install
+
+      - name: Compile protobufs
+        run: make recompile-proto
+
+      - name: Test
+        run: make test
+
+  release:
+    runs-on: ubuntu-latest
+    needs: [test, lint]
+    if: github.ref == 'refs/heads/master'
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+    - uses: actions/checkout@v2
+{% if cookiecutter.proto_repository | trim != "" -%}
+{% raw %}
+        with:
+          token: ${{ secrets.ROBOT_TOKEN }}
+          submodules: true
+{% endraw %}
+{%- endif %}
+
+    - name: Prepare
+      id: prep
+      run: |
+        SHORT_SHA=`git rev-parse --short HEAD`
+        IMAGE={{ cookiecutter.docker_tag }}
+        echo ::set-output name=latest_tag::${IMAGE}:latest
+        echo ::set-output name=current_tag::${IMAGE}:${SHORT_SHA}
+
+    - uses: docker/setup-buildx-action@v1
+
+{% raw %}
+    - name: Cache Docker layers
+      uses: actions/cache@v2
+      with:
+        path: /tmp/.buildx-cache
+        key: ${{ github.workflow }}-${{ github.job }}-${{ hashFiles('Cargo.lock') }}-${{ github.ref }}
+        restore-keys: ${{ github.workflow }}-${{ github.job }}-${{ hashFiles('Cargo.lock') }}
+
+    - uses: docker/login-action@v1
+      with:
+        registry: ghcr.io
+        username: token
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Docker build and push
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        builder: ${{ steps.buildx.outputs.name }}
+        push: true
+        tags: |
+          ${{ steps.prep.outputs.latest_tag }}
+          ${{ steps.prep.outputs.current_tag }}
+        cache-from: type=local,src=/tmp/.buildx-cache
+        cache-to: type=local,mode=max,dest=/tmp/.buildx-cache-new
+{% endraw %}
+
+    - name: Move cache
+      run: |
+        rm -rf /tmp/.buildx-cache
+        mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: release
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: install yc and helm
+      run: |
+        curl https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash
+        curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
+
+{% raw %}
+    - name: setup yc
+      env:
+        YANDEX_CLOUD_SERVICE_ACCOUNT_KEY: ${{ secrets.YANDEX_CLOUD_SERVICE_ACCOUNT_KEY }}
+      run: |
+        echo "$YANDEX_CLOUD_SERVICE_ACCOUNT_KEY" > key.json
+        ~/yandex-cloud/bin/yc config profile create default
+        ~/yandex-cloud/bin/yc config set service-account-key key.json
+
+    - name: setup kubectl
+      env:
+        YANDEX_CLOUD_KUBERNETES_CLUSTER_ID: ${{ secrets.YANDEX_CLOUD_KUBERNETES_CLUSTER_ID }}
+      run: |
+        ~/yandex-cloud/bin/yc managed-kubernetes cluster get-credentials \
+          --id "$YANDEX_CLOUD_KUBERNETES_CLUSTER_ID" \
+          --external \
+
+    - name: helm upgrade
+      run: |
+        export SHORT_SHA=`git rev-parse --short HEAD`
+        helm upgrade \
+          --atomic \
+          --set POSTGRES_URL=${{ secrets.POSTGRES_URL }} \
+          --set image.tag=$SHORT_SHA \
+          $SERVICE_NAME ./helm
+{% endraw %}

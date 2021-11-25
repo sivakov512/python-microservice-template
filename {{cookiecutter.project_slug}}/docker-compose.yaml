@@ -1,0 +1,13 @@
+version: '3.1'
+
+services:
+
+  postgres:
+    image: postgres:13
+    container_name: {{ cookiecutter.github_org }}-{{ cookiecutter.project_slug }}-postgres
+    environment:
+      POSTGRES_PASSWORD: guest
+      POSTGRES_USER: guest
+      POSTGRES_DB: guest
+    ports:
+      - 5432:5432

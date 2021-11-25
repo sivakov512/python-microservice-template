@@ -1,0 +1,10 @@
+replicaCount: 1
+
+image:
+  repository: {{ cookiecutter.docker_tag }}
+  pullPolicy: IfNotPresent
+  tag: ""
+
+imagePullSecrets: []
+
+POSTGRES_URL: "dummy"
