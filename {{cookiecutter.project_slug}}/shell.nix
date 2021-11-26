@@ -6,6 +6,8 @@ let
 in
 
 let
+  libraries = with stable; [ stdenv.cc.cc.lib ];
+
   pip-packages = packages: [
     packages.pip
     packages.poetry
@@ -27,8 +29,14 @@ stable.mkShell {
   buildInputs = [
     python
     stable.protobuf
-  ];
+    (unstable.go-migrate.overrideAttrs (attrs: { buildFlags = "-tags=postgres"; }))
+  ]
+  ++ libraries;
 
   PROTOC = "${pkgs.protobuf}/bin/protoc";
   PROTOC_INCLUDE = "${pkgs.protobuf}/include";
+
+  LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath libraries;
+
+  POSTGRES_URL = "postgres://guest:guest@localhost:5432/guest?sslmode=disable";
 }
