@@ -2,14 +2,13 @@
 
 {%- if grpc_support %}
 {%- set import_path, import_module, servicer_name = cookiecutter.grpc_servicer.rsplit('.', 2) %}
-{%- set import_module = import_module + "_pb2" %}
+{%- set import_module = import_module + "_pb2_grpc" %}
 {%- endif -%}
 
 {%- if grpc_support -%}
 from dataclasses import dataclass
 
-import grpc.aio
-{%- endif -%}
+{% endif -%}
 from asyncpg_engine import Engine
 {%- if grpc_support %}
 
@@ -20,7 +19,6 @@ __all__ = [{%- if grpc_support %}"Handler", {% endif -%}"RequiredProcedures"]
 
 
 class RequiredProcedures:
-
     def __init__(self, db: Engine):
         pass
 {%- if grpc_support %}
@@ -29,4 +27,4 @@ class RequiredProcedures:
 @dataclass
 class Handler({{ import_module }}.{{ servicer_name }}):
     procedures: RequiredProcedures
-{%- endif -%}
+{%- endif %}

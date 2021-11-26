@@ -15,7 +15,7 @@
     "docker_tag": "ghcr.io/{{ cookiecutter.github_org }}/{{ cookiecutter.github_repo }}",
 
     "proto_repository": "git@github.com:{{ cookiecutter.github_org }}/proto.git",
-    "grpc_servicer": "proto.services.{{ cookiecutter.project_slug }}.{{ cookiecutter.project_name.title()|replace(' ', '') }}",
+    "grpc_servicer": "proto.services.{{ cookiecutter.project_slug }}.service.{{ cookiecutter.project_name.title()|replace(' ', '') }}",
 
     "_copy_without_render": [
         "helm/templates"
