@@ -3,6 +3,7 @@
 {%- if grpc_support %}
 {%- set import_path, import_module, servicer_name = cookiecutter.grpc_servicer.rsplit('.', 2) %}
 {%- set import_module = import_module + "_pb2_grpc" %}
+{%- set servicer_name = servicer_name + "Servicer" %}
 {%- endif -%}
 
 import logging
@@ -27,7 +28,7 @@ async def run(postgres_url: str, port: int) -> None:
     server = grpc.aio.server()
     {%- if grpc_support %}
 
-    {{ import_module }}.add_{{ servicer_name }}Servicer_to_server(Handler(procedures), server)
+    {{ import_module }}.add_{{ servicer_name }}_to_server(Handler(procedures), server)
     {% else %}
 
     # TODO: add your servicer implementation to server here

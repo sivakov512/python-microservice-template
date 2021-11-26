@@ -3,6 +3,7 @@
 {%- if grpc_support %}
 {%- set import_path, import_module, servicer_name = cookiecutter.grpc_servicer.rsplit('.', 2) %}
 {%- set import_module = import_module + "_pb2_grpc" %}
+{%- set servicer_name = servicer_name + "Servicer" %}
 {%- endif -%}
 
 {%- if grpc_support -%}
