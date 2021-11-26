@@ -25,6 +25,11 @@ jobs:
       - name: Install dependencies
         run: pip install cookiecutter poetry
 
+      - name: Some git idetification
+        run: |
+          git config --global user.email "sivakov512@gmail.com"
+          git config --global user.name "Nikita Sivakov"
+
       - name: Generate
         run: cookiecutter --config-file example-user-config.yaml --no-input ./
 

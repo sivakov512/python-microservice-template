@@ -1,7 +1,7 @@
 recompile-proto:
-	find . -name "*.proto" | xargs -I {} \
+	find proto -name "*.proto" | xargs -I {} \
 	poetry run python -m grpc_tools.protoc \
-		-I . \
+		-I proto \
 		--python_out=. \
 		--grpc_python_out=. \
 		--mypy_out=. \

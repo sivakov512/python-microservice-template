@@ -3,7 +3,7 @@
 git init -b master .
 
 {% if cookiecutter.proto_repository | trim != "" -%}
-git submodule add {{ cookiecutter.proto_repository }}
+git submodule add {{ cookiecutter.proto_repository }} proto
 {%- endif %}
 
 git add ./

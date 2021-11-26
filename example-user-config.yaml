@@ -5,4 +5,4 @@ default_context:
   author_email: sivakov512@gmail.com
   github_org: sivakov512
   github_repo: python-microservice-template-example
-  proto_repository: git@github.com:sivakov512/python-microservice-template-proto.git
+  proto_repository: https://github.com/sivakov512/python-microservice-template-proto.git
