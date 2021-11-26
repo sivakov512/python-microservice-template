@@ -1,0 +1,51 @@
+name: ci
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+env:
+  POETRY_VIRTUALENVS_IN_PROJECT: "true"
+  POETRY_VERSION: 1.1.11
+
+jobs:
+  generate-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+
+      - name: Install dependencies
+        run: pip install cookiecutter poetry
+
+      - name: Generate
+        run: cookiecutter --config-file example-user-config.yaml --no-input ./
+
+      - uses: actions/cache@v2
+        with:
+          path: example/.venv
+          key: ${{ github.ref }}-${{ github.workflow }}-${{ hashFiles('example/pyproject.toml') }}
+          restore-keys: refs/heads/master-${{ github.workflow }}-${{ hashFiles('example/pyproject.toml') }}
+
+      - name: Post setup generated project
+        run: |
+          cd example
+          poetry install
+          make recompile-proto
+
+      - name: Lint
+        run: |
+          cd example
+          make lint
+
+      - name: Test
+        run: |
+          cd example
+          make test
