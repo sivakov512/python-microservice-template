@@ -18,10 +18,10 @@ Look at [generated service example](https://github.com/sivakov512/python-microse
 
 ## Github Actions
 
-Before using Github Actions you should add [PAT](https://github.com/settings/tokens) as secret named `ROBOT_TOKEN` (use special robot user, but personal okay too), otherwise CI will fail on git submodules checkout.
+Before using Github Actions you should add [PAT](https://github.com/settings/tokens) as secret named `ROBOT_TOKEN` (use special robot user, but personal token is okay too), otherwise CI will fail on git submodules checkout.
 
-Also you should complete following steps to deploy to Yandex.Cloud:
-* Register in [Yandex.Cloud](https://cloud.yandex.com/) (it's a good service, really) and create k8s cluster
+Also you should complete the following steps to deploy to Yandex.Cloud:
+* Register at [Yandex.Cloud](https://cloud.yandex.com/) (it's a good service, really) and create k8s cluster
 * Copy Kubernetes cluster ID to secret named `YANDEX_CLOUD_KUBERNETES_CLUSTER_ID`
 * [Get IAM token for your Yandex.Cloud service account](https://cloud.yandex.ru/docs/iam/operations/iam-token/create-for-sa) and copy it (key.json content) to secret named `YANDEX_CLOUD_SERVICE_ACCOUNT_KEY`.
 
@@ -31,9 +31,9 @@ Helm chart in repo is really very simple. You should edit it manually if you nee
 
 ## Database migrations
 
-You can see that Github Actions, Dockerfile and k8s are use [go-migrate](https://github.com/golang-migrate/migrate) tool to migrate database.
+You can see that Github Actions, Dockerfile and k8s use [go-migrate](https://github.com/golang-migrate/migrate) tool to migrate database.
 All existing migration tools are bad, but this tool is best of them. So it is my preferred choice.
 
 ## License
 
-There are no LICENSE file in generated project, so add it by yourself.
+There are no LICENSE file in generated project, so add it yourself.
