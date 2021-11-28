@@ -123,9 +123,9 @@ jobs:
     - uses: actions/checkout@v2
 {% if cookiecutter.proto_repository | trim != "" -%}
 {% raw %}
-        with:
-          token: ${{ secrets.ROBOT_TOKEN }}
-          submodules: true
+      with:
+        token: ${{ secrets.ROBOT_TOKEN }}
+        submodules: true
 {% endraw %}
 {%- endif %}
 
