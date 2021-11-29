@@ -24,7 +24,7 @@ WORKDIR /usr/local/lib/{{ cookiecutter.project_slug }}
 COPY . .
 
 RUN poetry install --no-dev \
-	&& find proto -name "*.proto" | xargs -I {} python -m grpc_tools.protoc -I . --python_out=. --grpc_python_out=. {}
+	&& find proto -name "*.proto" | xargs -I {} python -m grpc_tools.protoc -I proto --python_out=. --grpc_python_out=. {}
 
 
 CMD ["{{ cookiecutter.project_slug }}"]
