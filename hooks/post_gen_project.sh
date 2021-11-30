@@ -7,11 +7,9 @@ git submodule add {{ cookiecutter.proto_repository }} proto
 {%- endif %}
 
 git add ./
-git commit -m "Initial commit"
 
 git remote add origin {{ cookiecutter.git_repo_ssh }}
 git fetch
-git branch -u origin/master master
 
 echo -e '\nOkay...'
 echo 'Now look at the README in your new project and follow instructions.'
