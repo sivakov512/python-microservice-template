@@ -8,9 +8,13 @@ recompile-proto:
 		--mypy_grpc_out=. \
 		{}
 
-lint:
+flake8:
 	poetry run flake8 ./
+
+mypy:
 	poetry run mypy ./
+
+lint: flake8 mypy
 
 test:
 	poetry run pytest
