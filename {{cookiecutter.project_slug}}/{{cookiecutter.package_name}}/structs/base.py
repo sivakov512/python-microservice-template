@@ -5,7 +5,8 @@ __all__ = ["ProtoConvertable"]
 
 
 class ProtoConvertable:
-    @abc.abstractclassmethod
+    @classmethod
+    @abc.abstractmethod
     def from_proto(cls, message: t.Any) -> "ProtoConvertable":
         pass
 
